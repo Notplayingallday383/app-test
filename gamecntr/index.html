@@ -1,1 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Status</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
 
+        #loading {
+            display: none;
+            text-align: center;
+        }
+
+        #error-dialog {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #retry-btn, #cancel-btn {
+            padding: 10px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        #retry-btn {
+            background-color: #4caf50;
+            color: #fff;
+        }
+
+        #cancel-btn {
+            background-color: #f44336;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <img src="loading.gif" alt="Loading...">
+        <p>Connecting to the server...</p>
+    </div>
+
+    <div id="error-dialog">
+        <p>Error Connecting to the Server</p>
+        <button id="retry-btn">Retry</button>
+        <button id="cancel-btn">Cancel</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const loadingDiv = document.getElementById('loading');
+            const errorDialog = document.getElementById('error-dialog');
+            const retryBtn = document.getElementById('retry-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            simulateConnection();
+          
+            retryBtn.addEventListener('click', function () {
+                simulateConnection();
+            });
+
+            cancelBtn.addEventListener('click', function () {
+                window.location.href = 'err.html';
+            });
+
+            function simulateConnection() {
+                loadingDiv.style.display = 'block';
+                setTimeout(function () {
+                    loadingDiv.style.display = 'none';
+                    errorDialog.style.display = 'block';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
