@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connection Status</title>
+    <title>Terbium Games</title>
     <style>
         body {
+            background: black;
             margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             height: 100vh;
             background-color: #f0f0f0;
+            font-family: arial;
         }
 
         #loading {
@@ -20,13 +22,14 @@
         }
 
         #error-dialog {
+            color: #fff;
             display: none;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             padding: 20px;
-            background-color: #fff;
+            background-color: rgba(12,12,12,0.5);
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
         }
 
@@ -37,7 +40,7 @@
         }
 
         #retry-btn {
-            background-color: #4caf50;
+            background-color: #151515;
             color: #fff;
         }
 
@@ -49,7 +52,7 @@
 </head>
 <body>
     <div id="loading">
-        <img src="loading.gif" alt="Loading...">
+        <img src="https://v2.sodium-5h8.pages.dev/assets/img/loader.svg" width="50" height="50" alt="Loading...">
         <p>Connecting to the server...</p>
     </div>
 
@@ -80,7 +83,7 @@
                 setTimeout(function () {
                     loadingDiv.style.display = 'none';
                     errorDialog.style.display = 'block';
-                }, 3000);
+                }, 7500);
             }
         });
     </script>
