@@ -33,7 +33,7 @@ body {
 }
 
 #retry-btn {
-    background-color: #151515;
+    background-color: #2b2b2b;
     color: #fff;
 }
 
@@ -44,4 +44,5 @@ body {
 
 button {
     border-color: transparent;
+    border-radius: 12px;
 }
