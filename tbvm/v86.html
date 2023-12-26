@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v86 VM</title>
+  <link rel="stylesheet" href="./main.css">
+  <script src="./build/v86_all.js"></script>
+</head>
+<body>
+  <h1>v86 VM</h1>
+  <div id="v86-container"></div>
+
+  <script>
+    var vmInfo = JSON.parse(sessionStorage.getItem('v86_vm'));
+    if (vmInfo) {
+      console.log('v86 VM Information:', vmInfo);
+      var emulator = window.emulator = new V86Starter({
+        //wasm_path: "./build/v86.wasm",
+        memory_size: 32 * 1024 * 1024,
+        vga_memory_size: 2 * 1024 * 1024,
+        screen_container: document.getElementById("screen_container"),
+        bios: {
+            url: "./bios/seabios.bin",
+        },
+        vga_bios: {
+            url: "./bios/vgabios.bin",
+        },
+        cdrom: {
+            url: vmInfo.url
+        },
+        autostart: true,
+    });
+      document.getElementById('v86-container').appendChild(emulator.screen.canvas);
+    }
+  </script>
+</body>
+</html>

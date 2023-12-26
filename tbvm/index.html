@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VirtualBox Clone</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    #app {
+      display: flex;
+      height: 100vh;
+    }
+
+    #sidebar {
+      width: 200px;
+      background-color: #d8cccc;
+      color: #fff;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    #content {
+      flex: 1;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    #top-nav {
+      background-color: #d4c9c9;
+      color: #000000;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .vm-tab {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #bdb7b7;
+      cursor: pointer;
+    }
+
+    .vm-tab img {
+      margin-right: 10px;
+    }
+
+    .vm-tab:hover {
+      background-color: #d3c7c7;
+    }
+
+    #vm-specs {
+      display: none;
+    }
+
+    #create-vm-btn {
+      cursor: pointer;
+      color: #000000;
+      background-color: #b8bfc7;
+      border: none;
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="content">
+        <div id="top-nav">
+          VirtualBox Clone
+          <button id="create-vm-btn" onclick="toggleVMForm()">Create VM</button>
+          <button id="create-vm-btn" onclick="loadVMList()">Home</button>
+        </div>
+        <div id="vm-content">
+        </div>
+        <div id="vm-specs">
+          <h2>Create VM</h2>
+  	      <label for="vm-name">VM Name:</label>
+   	      <input type="text" id="vm-name">
+  	      <label for="vm-engine">Engine:</label>
+  	      <select id="vm-engine">
+    	      <option value="v86">v86</option>
+    	      <option value="BoxedWine">BoxedWine</option>
+  	      </select>
+  	      <label for="vm-iso">ISO:</label>
+  	      <select id="vm-iso">
+            <option value="arch" data-url="https://path/to/your/iso/Windows95.iso">Arch Linux</option>
+            <option value="Windows31" data-url="https://path/to/your/iso/Windows95.iso">Windows 3.1</option>
+            <option value="OpenBSD" data-url="https://path/to/your/iso/Windows95.iso">OpenBSD</option>
+  	      </select>
+  	      <button onclick="saveVM()">Save VM</button>
+        </div>
+      </div>
+  </div>
+
+  <script>
+    var currentSelectedIndex = -1;
+    
+    function toggleVMForm() {
+      var vmForm = document.getElementById('vm-specs');
+      vmForm.style.display = (vmForm.style.display === 'none' || vmForm.style.display === '') ? 'block' : 'none';
+    }
+
+    function saveVM() {
+      var vmNameInput = document.getElementById('vm-name');
+      var vmEngineSelect = document.getElementById('vm-engine');
+      var vmISOSelect = document.getElementById('vm-iso');
+
+      if (vmNameInput && vmEngineSelect && vmISOSelect) {
+        var vmName = vmNameInput.value;
+        var vmEngine = vmEngineSelect.value;
+        var vmISOIndex = vmISOSelect.selectedIndex;
+        var vmISO = vmISOSelect.options[vmISOIndex].value;
+        var vmURL = vmISOSelect.options[vmISOIndex].getAttribute('data-url');
+
+        if (vmName && vmEngine && vmISO && vmURL) {
+          var vmData = {
+            name: vmName,
+            engine: vmEngine,
+            iso: vmISO,
+            url: vmURL,
+          };
+
+          var vms = JSON.parse(localStorage.getItem('vms')) || [];
+          vms.push(vmData);
+          localStorage.setItem('vms', JSON.stringify(vms));
+          document.getElementById('vm-specs').style.display = 'none';
+          loadVMList();
+        }
+      } else {
+        console.error('Error: One or more elements not found.');
+      }
+    }
+
+    function loadVMList() {
+      var vmContent = document.getElementById('vm-content');
+      var vms = JSON.parse(localStorage.getItem('vms')) || [];
+
+      if (vms.length === 0) {
+        vmContent.innerHTML = '<p>No VMs found. Let\'s create one!</p>';
+      } else {
+        vmContent.innerHTML = '';
+        vms.forEach(function (vm, index) {
+          var vmTab = document.createElement('div');
+          vmTab.classList.add('vm-tab');
+          vmTab.innerHTML = `<img src="vm_icon.png" alt="${vm.name}">${vm.name}`;
+          vmTab.onclick = function () {
+            loadVMContent(index);
+          };
+          vmContent.appendChild(vmTab);
+        });
+      }
+    }
+
+    function loadVMContent(index) {
+      currentSelectedIndex = index;
+
+      var vmContent = document.getElementById('vm-content');
+      var vms = JSON.parse(localStorage.getItem('vms')) || [];
+
+      if (vms.length > 0) {
+        var selectedVM = vms[index];
+        vmContent.innerHTML = `<h2>${selectedVM.name}</h2><p>Engine: ${selectedVM.engine}</p><p>ISO: ${selectedVM.iso}</p><button onclick="startVM()">Start</button><button onclick="stopVM()">Stop</button><button onclick="manageVM()">Manage</button>`;
+      }
+    }
+
+    function startVM() {
+      var vmContent = document.getElementById('vm-content');
+      var vms = JSON.parse(localStorage.getItem('vms')) || [];
+
+      if (vms.length > 0) {
+        var selectedVM = vms.find((vm, index) => index === currentSelectedIndex);
+
+        if (selectedVM) {
+          if (selectedVM.engine === 'v86') {
+            sessionStorage.setItem('v86_vm', JSON.stringify(selectedVM));
+            window.location.href = 'v86.html';
+          } else if (selectedVM.engine === 'BoxedWine') {
+            sessionStorage.setItem('wine_vm', JSON.stringify(selectedVM));
+            window.location.href = 'wine.html';
+          }
+        }
+      }
+    }
+
+    function stopVM() {
+      alert('Stopping VM...');
+    }
+
+    function manageVM() {
+      alert('Managing VM...');
+    }
+
+    loadVMList();
+  </script>
+</body>
+</html>
